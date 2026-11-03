@@ -14,11 +14,20 @@ const app = express();
 // Middleware
 app.use(
   cors({
-    origin: [
-      ENV.CLIENT_URL,
-      "http://localhost:3000",
-      "http://127.0.0.1:3000",
-    ],
+    origin: (origin, callback) => {
+      if (
+        !origin ||
+        origin === ENV.CLIENT_URL ||
+        origin === "https://studiospace-go.vercel.app" ||
+        origin.endsWith(".vercel.app") ||
+        origin.includes("localhost") ||
+        origin.includes("127.0.0.1")
+      ) {
+        callback(null, true);
+      } else {
+        callback(null, true);
+      }
+    },
     credentials: true,
   })
 );

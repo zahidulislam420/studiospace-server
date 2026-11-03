@@ -1,5 +1,4 @@
 import { Request, Response, NextFunction } from "express";
-import { jwtVerify } from "jose";
 import { ENV } from "../config/env";
 import { errorResponse } from "../utils/response";
 
@@ -16,6 +15,20 @@ declare global {
       user?: AuthUser;
     }
   }
+}
+
+// Cached dynamic import to support ESM-only jose in CommonJS runtime
+let jwtVerifyFn: typeof import("jose").jwtVerify | null = null;
+
+async function getJwtVerify(): Promise<typeof import("jose").jwtVerify> {
+  if (!jwtVerifyFn) {
+    const dynamicImport = new Function("specifier", "return import(specifier)") as (
+      specifier: string
+    ) => Promise<typeof import("jose")>;
+    const jose = await dynamicImport("jose");
+    jwtVerifyFn = jose.jwtVerify;
+  }
+  return jwtVerifyFn;
 }
 
 export async function verifyJWT(
@@ -35,6 +48,7 @@ export async function verifyJWT(
       return errorResponse(res, "Unauthorized: Authentication token is missing", 401);
     }
 
+    const jwtVerify = await getJwtVerify();
     const secret = new TextEncoder().encode(ENV.JWT_SECRET);
     const { payload } = await jwtVerify(token, secret);
 
@@ -68,6 +82,7 @@ export async function optionalJWT(
     }
 
     if (token) {
+      const jwtVerify = await getJwtVerify();
       const secret = new TextEncoder().encode(ENV.JWT_SECRET);
       const { payload } = await jwtVerify(token, secret);
       if (payload?.email) {

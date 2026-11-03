@@ -6,6 +6,8 @@ import { connectDB } from "./config/db";
 import { errorHandler } from "./middleware/errorHandler";
 import studiosRoutes from "./modules/studios/studios.routes";
 import bookingsRoutes from "./modules/bookings/bookings.routes";
+import reviewsRoutes from "./modules/reviews/reviews.routes";
+import wishlistRoutes from "./modules/wishlist/wishlist.routes";
 
 const app = express();
 
@@ -41,6 +43,8 @@ app.get("/api/health", (_req, res) => {
 // API Routes
 app.use("/api/studios", studiosRoutes);
 app.use("/api/bookings", bookingsRoutes);
+app.use("/api/reviews", reviewsRoutes);
+app.use("/api/wishlist", wishlistRoutes);
 
 // Global Error Handler
 app.use(errorHandler);

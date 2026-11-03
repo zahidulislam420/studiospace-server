@@ -1,4 +1,4 @@
-import { MongoClient, Db } from "mongodb";
+import { MongoClient, MongoClientOptions, Db } from "mongodb";
 import { ENV } from "./env";
 
 let client: MongoClient | null = null;
@@ -16,11 +16,28 @@ export function getMongoUri(): string {
   return uri;
 }
 
+export const mongoOptions: MongoClientOptions = {
+  tls: true,
+  tlsAllowInvalidCertificates: false,
+  serverSelectionTimeoutMS: 15000,
+  connectTimeoutMS: 15000,
+  socketTimeoutMS: 45000,
+  retryWrites: true,
+  w: "majority",
+  maxPoolSize: 10,
+  minPoolSize: 1,
+};
+
 export async function connectDB(): Promise<Db> {
   if (db) return db;
 
   const uri = getMongoUri();
-  client = new MongoClient(uri);
+  const isSrv = uri.startsWith("mongodb+srv://");
+  const options: MongoClientOptions = isSrv
+    ? mongoOptions
+    : { retryWrites: true };
+
+  client = new MongoClient(uri, options);
 
   try {
     await client.connect();

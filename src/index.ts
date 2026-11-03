@@ -5,6 +5,7 @@ import { ENV } from "./config/env";
 import { connectDB } from "./config/db";
 import { errorHandler } from "./middleware/errorHandler";
 import studiosRoutes from "./modules/studios/studios.routes";
+import bookingsRoutes from "./modules/bookings/bookings.routes";
 
 const app = express();
 
@@ -39,6 +40,7 @@ app.get("/api/health", (_req, res) => {
 
 // API Routes
 app.use("/api/studios", studiosRoutes);
+app.use("/api/bookings", bookingsRoutes);
 
 // Global Error Handler
 app.use(errorHandler);

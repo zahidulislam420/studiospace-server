@@ -7,6 +7,7 @@ const router = Router();
 // Public Read Endpoints
 router.get("/", StudiosController.getStudios);
 router.get("/featured", StudiosController.getFeatured);
+router.get("/mine", verifyJWT, StudiosController.getMyStudios);
 router.get("/:id", StudiosController.getStudioById);
 
 // Protected Mutation Endpoints

@@ -54,6 +54,25 @@ export class StudiosController {
     }
   }
 
+  static async getMyStudios(req: Request, res: Response) {
+    try {
+      const user = req.user;
+      if (!user?.email) {
+        return errorResponse(res, "Unauthorized", 401);
+      }
+
+      const result = await StudiosService.findStudios({
+        ownerEmail: user.email,
+        limit: 100,
+      });
+
+      return successResponse(res, result.studios, "My listings fetched successfully");
+    } catch (error) {
+      console.error("Error fetching my studios:", error);
+      return errorResponse(res, "Failed to fetch your listings", 500);
+    }
+  }
+
   static async getStudioById(req: Request, res: Response) {
     try {
       const id = Array.isArray(req.params.id) ? req.params.id[0] : req.params.id;

@@ -4,6 +4,7 @@ import cookieParser from "cookie-parser";
 import { ENV } from "./config/env";
 import { connectDB } from "./config/db";
 import { errorHandler } from "./middleware/errorHandler";
+import studiosRoutes from "./modules/studios/studios.routes";
 
 const app = express();
 
@@ -35,6 +36,9 @@ app.get("/", (_req, res) => {
 app.get("/api/health", (_req, res) => {
   res.json({ status: "healthy", uptime: process.uptime() });
 });
+
+// API Routes
+app.use("/api/studios", studiosRoutes);
 
 // Global Error Handler
 app.use(errorHandler);
